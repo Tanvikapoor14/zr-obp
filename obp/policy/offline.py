@@ -757,6 +757,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
     epsilon: float = 1e-8
     n_iter_no_change: int = 10
     q_func_estimator_hyperparams: Optional[Dict] = None
+    loss_translation = 0
 
     def __post_init__(self) -> None:
         """Initialize class."""
@@ -902,7 +903,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
         reward: np.ndarray,
         pscore: np.ndarray,
         position: np.ndarray,
-        **kwargs,
+        ** kwargs,
     ) -> Tuple[torch.utils.data.DataLoader, Optional[torch.utils.data.DataLoader]]:
         """Create training data for off-policy learning.
 
@@ -941,7 +942,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
             torch.from_numpy(action).long(),
             torch.from_numpy(reward).float(),
             torch.from_numpy(pscore).float(),
-            torch.from_numpy(position).float(),
+            torch.from_numpy(position).float()
         )
 
         if self.early_stopping:
@@ -982,7 +983,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
         action: np.ndarray,
         reward: np.ndarray,
         pscore: Optional[np.ndarray] = None,
-        position: Optional[np.ndarray] = None,
+        position: Optional[np.ndarray] = None
     ) -> None:
         """Fits an offline bandit policy on the given logged bandit data.
 
@@ -1022,7 +1023,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
             action=action,
             reward=reward,
             pscore=pscore,
-            position=position,
+            position=position
         )
         if context.shape[1] != self.dim_context:
             raise ValueError(
@@ -1071,8 +1072,11 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
         training_data_loader, validation_data_loader = self._create_train_data_for_opl(
             context, action, reward, pscore, position
         )
+        print(reward - 0)
+        print(reward - 0.5)
 
         # start policy training
+        print("Here")
         n_not_improving_training = 0
         previous_training_loss = None
         n_not_improving_validation = 0
@@ -1088,7 +1092,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
                     action=a,
                     pscore=p,
                     action_dist=action_dist_by_current_policy,
-                    position=pos,
+                    position=pos
                 )
                 policy_constraint = self._estimate_policy_constraint(
                     action=a,
@@ -1123,7 +1127,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
                         action=a,
                         pscore=p,
                         action_dist=action_dist_by_current_policy,
-                        position=pos,
+                        position=pos
                     )
                     policy_constraint = self._estimate_policy_constraint(
                         action=a,
@@ -1173,6 +1177,8 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
         action_dist: array-like, shape (batch_size, n_actions, len_list)
             Action choice probabilities of the evaluation policy (can be deterministic), i.e., :math:`\\pi_e(a_i|x_i)`.
 
+        l : number representing lambda, which is the loss translation
+
         Returns
         ----------
         estimated_policy_grad: array-like, shape (batch_size,)
@@ -1190,8 +1196,16 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
             estimated_policy_grad = torch.sum(q_hat * current_pi * log_prob, dim=1)
 
         elif self.off_policy_objective == "ipw":
+            # This produces the ratio between the probability of choosing a given
+            # action with the policy over the probability of chossing it with
+            # the logging policy (i.e. propensity)
             iw = current_pi[idx_tensor, action] / pscore
-            estimated_policy_grad = iw * reward
+            # Multiplying the ratio with the reward for choosing that action
+            # (here is where I added l)
+            #print(reward - 0.5)
+            estimated_policy_grad = iw * (reward - self.loss_translation)
+            # Multiplying each reward*ratio value with the log of the probability
+            # of choosing that action
             estimated_policy_grad *= log_prob[idx_tensor, action]
 
         elif self.off_policy_objective == "dr":

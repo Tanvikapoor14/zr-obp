@@ -160,6 +160,7 @@ class BaseOfflinePolicyLearner(metaclass=ABCMeta):
 
     n_actions: int
     len_list: int = 1
+    loss_translation = 0
 
     def __post_init__(self) -> None:
         """Initialize class."""
