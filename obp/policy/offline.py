@@ -744,7 +744,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
     alpha: float = 0.0001
     batch_size: Union[int, str] = "auto"
     learning_rate_init: float = 0.0001
-    max_iter: int = 200
+    max_iter: int = 200  # 400, 600
     shuffle: bool = True
     random_state: Optional[int] = None
     tol: float = 1e-4
@@ -757,7 +757,7 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
     epsilon: float = 1e-8
     n_iter_no_change: int = 10
     q_func_estimator_hyperparams: Optional[Dict] = None
-    loss_translation = 0
+    loss_translation: Union[int, float] = 0.0
 
     def __post_init__(self) -> None:
         """Initialize class."""
@@ -1202,10 +1202,11 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
             iw = current_pi[idx_tensor, action] / pscore
             # Multiplying the ratio with the reward for choosing that action
             # (here is where I added l)
-            #print(reward - 0.5)
+            # print(reward - 0.5)
             estimated_policy_grad = iw * (reward - self.loss_translation)
             # Multiplying each reward*ratio value with the log of the probability
             # of choosing that action
+            # log derivative trick / REINFORCE Trick
             estimated_policy_grad *= log_prob[idx_tensor, action]
 
         elif self.off_policy_objective == "dr":
