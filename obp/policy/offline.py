@@ -736,17 +736,17 @@ class NNPolicyLearner(BaseOfflinePolicyLearner):
 
     dim_context: Optional[int] = None
     off_policy_objective: Optional[str] = None
-    policy_reg_param: float = 0.0
+    policy_reg_param: float = 0.0  # Have different -> 10^-3 and 0
     var_reg_param: float = 0.0
     hidden_layer_size: Tuple[int, ...] = (100,)
     activation: str = "relu"
     solver: str = "adam"
     alpha: float = 0.0001
     batch_size: Union[int, str] = "auto"
-    learning_rate_init: float = 0.0001
-    max_iter: int = 200  # 400, 600
+    learning_rate_init: float = 0.0001  # Have different - factor of 10 higher, 2 l.r.
+    max_iter: int = 200
     shuffle: bool = True
-    random_state: Optional[int] = None
+    random_state: Optional[int] = None  # Have 5 different for each run, and then average over it
     tol: float = 1e-4
     momentum: float = 0.9
     nesterovs_momentum: bool = True

@@ -1,0 +1,53 @@
+With param values max_iter: 200 and random state: 12345:
+policy value of NN Policy Learner with no loss: 0.7386491310472931
+policy value of NN Policy Learner with training denominator = 1: 0.7747569465293875
+policy value of NN Policy Learner with max training ratio: 0.7748265861941667
+policy value of NN Policy Learner with max validation ratio: 0.7680523661659651
+
+With param values max_iter: 200 and random state: 54321:
+policy value of NN Policy Learner with no loss: 0.7426535159127408
+policy value of NN Policy Learner with training denominator = 1: 0.7715344364047754
+policy value of NN Policy Learner with max training ratio: 0.7731315919182911
+policy value of NN Policy Learner with max validation ratio: 0.7732276796432124
+
+With param values max_iter: 200 and random state: 11111:
+policy value of NN Policy Learner with no loss: 0.7525011085808299
+policy value of NN Policy Learner with training denominator = 1: 0.7720505838029407
+policy value of NN Policy Learner with max training ratio: 0.7730628901592789
+policy value of NN Policy Learner with max validation ratio: 0.7668315147195144
+
+With param values max_iter: 400 and random state: 12345:
+policy value of NN Policy Learner with no loss: 0.7398197119038757
+policy value of NN Policy Learner with training denominator = 1: 0.7766124327909866
+policy value of NN Policy Learner with max training ratio: 0.7769203594403252
+policy value of NN Policy Learner with max validation ratio: 0.7773797407968638
+
+With param values max_iter: 400 and random state: 54321:
+policy value of NN Policy Learner with no loss: 0.7410873609605234
+policy value of NN Policy Learner with training denominator = 1: 0.7723769030272255
+policy value of NN Policy Learner with max training ratio: 0.7732770019666159
+policy value of NN Policy Learner with max validation ratio: 0.7731680890786808
+
+With param values max_iter: 400 and random state: 11111
+policy value of NN Policy Learner with no loss: 0.7546790476871189
+policy value of NN Policy Learner with training denominator = 1: 0.7741643135010833
+policy value of NN Policy Learner with max training ratio: 0.7757263510043393
+policy value of NN Policy Learner with max validation ratio: 0.7771054202469122
+
+With param values max_iter: 600 and random state: 12345
+policy value of NN Policy Learner with no loss: 0.7377183701160861
+policy value of NN Policy Learner with training denominator = 1: 0.7745747658169609
+policy value of NN Policy Learner with max training ratio: 0.7752590109877534
+policy value of NN Policy Learner with max validation ratio: 0.7757695677390706
+
+With param values max_iter: 600 and random state: 54321
+policy value of NN Policy Learner with no loss: 0.7387109034628571
+policy value of NN Policy Learner with training denominator = 1: 0.7719372762172637
+policy value of NN Policy Learner with max training ratio: 0.7728581392464839
+policy value of NN Policy Learner with max validation ratio: 0.7703783947248856
+
+With param values max_iter: 600 and random state: 11111
+policy value of NN Policy Learner with no loss: 0.7522879641248835
+policy value of NN Policy Learner with training denominator = 1: 0.7727493472735079
+policy value of NN Policy Learner with max training ratio: 0.7740769181237671
+policy value of NN Policy Learner with max validation ratio: 0.7745603311282873
