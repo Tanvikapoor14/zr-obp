@@ -35,13 +35,15 @@ def generateDataset():
     return dataset
 
 
-def generateModel(dataset, m, l, r):
+def generateModel(dataset, m, l, r, p, lr):
 
     nn_ipw = NNPolicyLearner(
         n_actions=dataset.n_actions,
         dim_context=dataset.dim_context,
         off_policy_objective="ipw",
+        policy_reg_param=p,
         batch_size=64,
+        learning_rate_init=lr,
         max_iter=m,
         random_state=r,
         loss_translation=l
@@ -60,11 +62,11 @@ def graph_values(pred_actions, action, pscore, rewards):
     return num, den, ratio
 
 
-def predict_value_den_train(m, r, dataset, l, bandit_feedback_train):
+def predict_value_den_train(m, r, p, lr, dataset, l, bandit_feedback_train):
     """Returns the denominator of the SNIPS estimator, after training on the
     training data"""
 
-    model = generateModel(dataset, m, l, r)
+    model = generateModel(dataset, m, l, r, p, lr)
 
     # train NNPolicyLearner on the training set of logged bandit data
     model.fit(
@@ -95,7 +97,7 @@ def nearestPoint(lo, hi, search):
     return ans
 
 
-def interpolationSearch(m, r, dataset, bandit_feedback_train, lo, hi, increment, search_value, epsilon):
+def interpolationSearch(m, r, p, lr, dataset, bandit_feedback_train, lo, hi, increment, search_value, epsilon):
     """Performs an interpolation search on different values of loss translation lambda,
     to get the value of the denominator closest to 1, for the SNIPS estimator of
     the training data"""
@@ -103,24 +105,24 @@ def interpolationSearch(m, r, dataset, bandit_feedback_train, lo, hi, increment,
     while lo <= hi:
 
         pos = nearestPoint(lo, hi, search_value)
-        input_pos = predict_value_den_train(m, r, dataset, pos, bandit_feedback_train)
+        input_pos = predict_value_den_train(m, r, p, lr, dataset, pos, bandit_feedback_train)
         print(input_pos)
 
         if abs(input_pos - search_value) <= epsilon:
             return pos
 
         elif input_pos > search_value:
-            return interpolationSearch(m, r, dataset, bandit_feedback_train,
+            return interpolationSearch(m, r, p, lr, dataset, bandit_feedback_train,
                                        pos + increment, hi, increment, search_value, epsilon)
 
         else:
-            return interpolationSearch(m, r, dataset, bandit_feedback_train,
+            return interpolationSearch(m, r, p, lr, dataset, bandit_feedback_train,
                                        lo, pos - increment, increment, search_value, epsilon)
 
     return -1
 
 
-def binarySearch(m, r, dataset, bandit_feedback_train, lo, hi, increment, search_value, epsilon):
+def binarySearch(m, r, p, lr, dataset, bandit_feedback_train, lo, hi, increment, search_value, epsilon):
     """Performs a binary search on different values of loss translation lambda,
     to get the value of the denominator closest to 1, for the SNIPS estimator of
     the training data"""
@@ -128,27 +130,27 @@ def binarySearch(m, r, dataset, bandit_feedback_train, lo, hi, increment, search
     while lo <= hi:
 
         pos = lo + ((hi - lo) / 2)
-        input_pos = predict_value_den_train(m, r, dataset, pos, bandit_feedback_train)
+        input_pos = predict_value_den_train(m, r, p, lr, dataset, pos, bandit_feedback_train)
         print(input_pos)
 
         if abs(input_pos - search_value) <= epsilon:
             return pos
 
         elif input_pos > search_value:
-            return binarySearch(m, r, dataset, bandit_feedback_train, pos + increment,
+            return binarySearch(m, r, p, lr, dataset, bandit_feedback_train, pos + increment,
                                 hi, increment, search_value, epsilon)
 
         else:
-            return binarySearch(m, r, dataset, bandit_feedback_train, lo,
+            return binarySearch(m, r, p, lr, dataset, bandit_feedback_train, lo,
                                 pos - increment, increment, search_value, epsilon)
 
     return -1
 
 
-def predict_value_ratio_train(m, r, dataset, l, bandit_feedback_train):
+def predict_value_ratio_train(m, r, p, lr, dataset, l, bandit_feedback_train):
     """Returns the SNIPS estimator ratio of the training data"""
 
-    model = generateModel(dataset, m, l, r)
+    model = generateModel(dataset, m, l, r, p, lr)
 
     # train NNPolicyLearner on the training set of logged bandit data
     model.fit(
@@ -185,11 +187,11 @@ def bayesOpt(black_box_function, pbounds, init_pnts, num_iter):
     return (optimizer.max["params"], optimizer.max["target"])
 
 
-def predict_value_ratio_val(m, r , dataset, l, bandit_feedback_train, bandit_feedback_val):
+def predict_value_ratio_val(m, r , p, lr, dataset, l, bandit_feedback_train, bandit_feedback_val):
     """Returns the SNIPS estimator ratio, after training on the 
     validation data"""
 
-    model = generateModel(dataset, m, l, r)
+    model = generateModel(dataset, m, l, r, p, lr)
 
     # train NNPolicyLearner on the training set of logged bandit data
     model.fit(
